@@ -36,6 +36,7 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -147,6 +148,8 @@ public class MongoDBConnectorITCase extends MongoDBTestBase {
         products.deleteOne(Filters.eq("_id", new ObjectId("100000000000000000000111")));
 
         waitForSinkSize("sink", 20);
+
+        System.out.println("testConsumingAllEvents-waitForSinkSize");
 
         // The final database table looks like this:
         //
@@ -476,6 +479,7 @@ public class MongoDBConnectorITCase extends MongoDBTestBase {
 
     private static void waitForSinkSize(String sinkName, int expectedSize)
             throws InterruptedException {
+        System.out.println(sinkSize(sinkName));
         while (sinkSize(sinkName) < expectedSize) {
             Thread.sleep(100);
         }
