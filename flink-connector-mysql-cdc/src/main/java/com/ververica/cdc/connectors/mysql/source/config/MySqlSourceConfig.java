@@ -45,7 +45,6 @@ public class MySqlSourceConfig implements Serializable {
     private final StartupOptions startupOptions;
     private final int splitSize;
     private final int splitMetaGroupSize;
-    private final int fetchSize;
     private final String serverTimeZone;
     private final Duration connectTimeout;
     private final int connectMaxRetries;
@@ -75,7 +74,6 @@ public class MySqlSourceConfig implements Serializable {
             StartupOptions startupOptions,
             int splitSize,
             int splitMetaGroupSize,
-            int fetchSize,
             String serverTimeZone,
             Duration connectTimeout,
             int connectMaxRetries,
@@ -97,7 +95,6 @@ public class MySqlSourceConfig implements Serializable {
         this.startupOptions = checkNotNull(startupOptions);
         this.splitSize = splitSize;
         this.splitMetaGroupSize = splitMetaGroupSize;
-        this.fetchSize = fetchSize;
         this.serverTimeZone = checkNotNull(serverTimeZone);
         this.connectTimeout = checkNotNull(connectTimeout);
         this.connectMaxRetries = connectMaxRetries;
@@ -160,10 +157,6 @@ public class MySqlSourceConfig implements Serializable {
 
     public double getDistributionFactorLower() {
         return distributionFactorLower;
-    }
-
-    public int getFetchSize() {
-        return fetchSize;
     }
 
     public String getServerTimeZone() {

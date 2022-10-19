@@ -21,6 +21,8 @@ import org.apache.flink.util.FlinkRuntimeException;
 
 import org.apache.flink.shaded.guava30.com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import com.ververica.cdc.connectors.mysql.debezium.MySqlBinaryProtocolFieldReader;
+import com.ververica.cdc.connectors.mysql.debezium.MySqlTextProtocolFieldReader;
 import com.ververica.cdc.connectors.mysql.debezium.dispatcher.SignalEventDispatcher;
 import com.ververica.cdc.connectors.mysql.debezium.task.MySqlBinlogSplitReadTask;
 import com.ververica.cdc.connectors.mysql.debezium.task.MySqlSnapshotSplitReadTask;
@@ -108,9 +110,14 @@ public class SnapshotSplitReader implements DebeziumReader<SourceRecords, MySqlS
         this.nameAdjuster = statefulTaskContext.getSchemaNameAdjuster();
         this.hasNextElement.set(true);
         this.reachEnd.set(false);
+        MySqlConnectorConfig connectorConfig = statefulTaskContext.getConnectorConfig();
+
         this.splitSnapshotReadTask =
                 new MySqlSnapshotSplitReadTask(
-                        statefulTaskContext.getConnectorConfig(),
+                        connectorConfig,
+                        connectorConfig.useCursorFetch()
+                                ? new MySqlBinaryProtocolFieldReader(connectorConfig)
+                                : new MySqlTextProtocolFieldReader(connectorConfig),
                         statefulTaskContext.getSnapshotChangeEventSourceMetrics(),
                         statefulTaskContext.getDatabaseSchema(),
                         statefulTaskContext.getConnection(),
@@ -149,8 +156,7 @@ public class SnapshotSplitReader implements DebeziumReader<SourceRecords, MySqlS
                             final MySqlBinlogSplitReadTask backfillBinlogReadTask =
                                     createBackfillBinlogReadTask(backfillBinlogSplit);
                             final MySqlOffsetContext.Loader loader =
-                                    new MySqlOffsetContext.Loader(
-                                            statefulTaskContext.getConnectorConfig());
+                                    new MySqlOffsetContext.Loader(connectorConfig);
                             final MySqlOffsetContext mySqlOffsetContext =
                                     loader.load(
                                             backfillBinlogSplit.getStartingOffset().getOffset());
