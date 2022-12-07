@@ -21,8 +21,6 @@ import org.apache.flink.util.FlinkRuntimeException;
 
 import org.apache.flink.shaded.guava30.com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-import com.ververica.cdc.connectors.mysql.debezium.MySqlBinaryProtocolFieldReader;
-import com.ververica.cdc.connectors.mysql.debezium.MySqlTextProtocolFieldReader;
 import com.ververica.cdc.connectors.mysql.debezium.dispatcher.SignalEventDispatcher;
 import com.ververica.cdc.connectors.mysql.debezium.task.MySqlBinlogSplitReadTask;
 import com.ververica.cdc.connectors.mysql.debezium.task.MySqlSnapshotSplitReadTask;
@@ -38,6 +36,8 @@ import io.debezium.connector.base.ChangeEventQueue;
 import io.debezium.connector.mysql.MySqlConnectorConfig;
 import io.debezium.connector.mysql.MySqlOffsetContext;
 import io.debezium.connector.mysql.MySqlStreamingChangeEventSourceMetrics;
+import io.debezium.connector.mysql.MysqlBinaryProtocolFieldReader;
+import io.debezium.connector.mysql.MysqlTextProtocolFieldReader;
 import io.debezium.heartbeat.Heartbeat;
 import io.debezium.pipeline.DataChangeEvent;
 import io.debezium.pipeline.source.spi.ChangeEventSource;
@@ -116,8 +116,8 @@ public class SnapshotSplitReader implements DebeziumReader<SourceRecords, MySqlS
                 new MySqlSnapshotSplitReadTask(
                         connectorConfig,
                         connectorConfig.useCursorFetch()
-                                ? new MySqlBinaryProtocolFieldReader(connectorConfig)
-                                : new MySqlTextProtocolFieldReader(connectorConfig),
+                                ? new MysqlBinaryProtocolFieldReader()
+                                : new MysqlTextProtocolFieldReader(),
                         statefulTaskContext.getSnapshotChangeEventSourceMetrics(),
                         statefulTaskContext.getDatabaseSchema(),
                         statefulTaskContext.getConnection(),

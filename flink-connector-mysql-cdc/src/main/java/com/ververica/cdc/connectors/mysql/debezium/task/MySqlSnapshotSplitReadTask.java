@@ -16,7 +16,6 @@
 
 package com.ververica.cdc.connectors.mysql.debezium.task;
 
-import com.ververica.cdc.connectors.mysql.debezium.AbstractMySqlFieldReader;
 import com.ververica.cdc.connectors.mysql.debezium.dispatcher.EventDispatcherImpl;
 import com.ververica.cdc.connectors.mysql.debezium.dispatcher.SignalEventDispatcher;
 import com.ververica.cdc.connectors.mysql.debezium.reader.SnapshotSplitReader;
@@ -28,6 +27,7 @@ import io.debezium.connector.mysql.MySqlConnection;
 import io.debezium.connector.mysql.MySqlConnectorConfig;
 import io.debezium.connector.mysql.MySqlDatabaseSchema;
 import io.debezium.connector.mysql.MySqlOffsetContext;
+import io.debezium.connector.mysql.MysqlFieldReader;
 import io.debezium.pipeline.EventDispatcher;
 import io.debezium.pipeline.metrics.SnapshotChangeEventSourceMetrics;
 import io.debezium.pipeline.source.AbstractSnapshotChangeEventSource;
@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.time.Duration;
 
 import static com.ververica.cdc.connectors.mysql.debezium.DebeziumUtils.currentBinlogOffset;
@@ -74,11 +73,11 @@ public class MySqlSnapshotSplitReadTask
     private final EventDispatcher.SnapshotReceiver snapshotReceiver;
     private final SnapshotChangeEventSourceMetrics snapshotChangeEventSourceMetrics;
 
-    private final AbstractMySqlFieldReader mySqlFieldReader;
+    private final MysqlFieldReader mySqlFieldReader;
 
     public MySqlSnapshotSplitReadTask(
             MySqlConnectorConfig connectorConfig,
-            AbstractMySqlFieldReader mySqlFieldReader,
+            MysqlFieldReader mySqlFieldReader,
             SnapshotChangeEventSourceMetrics snapshotChangeEventSourceMetrics,
             MySqlDatabaseSchema databaseSchema,
             MySqlConnection jdbcConnection,
@@ -240,7 +239,7 @@ public class MySqlSnapshotSplitReadTask
                 for (int i = 0; i < columnArray.getColumns().length; i++) {
                     Column actualColumn = table.columns().get(i);
                     row[columnArray.getColumns()[i].position() - 1] =
-                            readField(rs, i + 1, actualColumn, table);
+                            mySqlFieldReader.readField(rs, i + 1, actualColumn, table);
                 }
                 if (logTimer.expired()) {
                     long stop = clock.currentTimeInMillis();
@@ -275,39 +274,5 @@ public class MySqlSnapshotSplitReadTask
 
     private Threads.Timer getTableScanLogTimer() {
         return Threads.timer(clock, LOG_INTERVAL);
-    }
-
-    /**
-     * Read JDBC return value and deal special type like time, timestamp.
-     *
-     * <p>Note https://issues.redhat.com/browse/DBZ-3238 has fixed this issue, please remove this
-     * method once we bump Debezium version to 1.6
-     */
-    private Object readField(ResultSet rs, int fieldNo, Column actualColumn, Table actualTable)
-            throws SQLException {
-        if (actualColumn.jdbcType() == Types.TIME) {
-            return mySqlFieldReader.readTimeField(rs, fieldNo);
-        } else if (actualColumn.jdbcType() == Types.DATE) {
-            return mySqlFieldReader.readDateField(rs, fieldNo, actualColumn, actualTable);
-        }
-        // This is for DATETIME columns (a logical date + time without time zone)
-        // by reading them with a calendar based on the default time zone, we make sure that the
-        // value
-        // is constructed correctly using the database's (or connection's) time zone
-        else if (actualColumn.jdbcType() == Types.TIMESTAMP) {
-            return mySqlFieldReader.readTimestampField(rs, fieldNo, actualColumn, actualTable);
-        }
-        // JDBC's rs.GetObject() will return a Boolean for all TINYINT(1) columns.
-        // TINYINT columns are reprtoed as SMALLINT by JDBC driver
-        else if (actualColumn.jdbcType() == Types.TINYINT
-                || actualColumn.jdbcType() == Types.SMALLINT) {
-            // It seems that rs.wasNull() returns false when default value is set and NULL is
-            // inserted
-            // We thus need to use getObject() to identify if the value was provided and if yes then
-            // read it again to get correct scale
-            return rs.getObject(fieldNo) == null ? null : rs.getInt(fieldNo);
-        } else {
-            return rs.getObject(fieldNo);
-        }
     }
 }
