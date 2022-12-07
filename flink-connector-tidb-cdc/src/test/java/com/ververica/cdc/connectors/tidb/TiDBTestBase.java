@@ -18,7 +18,9 @@ package com.ververica.cdc.connectors.tidb;
 
 import org.apache.flink.test.util.AbstractTestBase;
 
-import com.alibaba.dcm.DnsCacheManipulator;
+import com.alibaba.dcm.DnsCacheManipulatorException;
+import com.alibaba.dcm.internal.InetAddressCacheUtilForJava8Minus;
+import com.alibaba.dcm.internal.InetAddressCacheUtilForJava9Plus;
 import org.apache.commons.lang3.RandomUtils;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
@@ -127,8 +129,8 @@ public class TiDBTestBase extends AbstractTestBase {
     @BeforeClass
     public static void startContainers() throws Exception {
         // Add jvm dns cache for flink to invoke pd interface.
-        DnsCacheManipulator.setDnsCache(PD_SERVICE_NAME, "127.0.0.1");
-        DnsCacheManipulator.setDnsCache(TIKV_SERVICE_NAME, "127.0.0.1");
+        setDnsCache(PD_SERVICE_NAME, "127.0.0.1");
+        setDnsCache(TIKV_SERVICE_NAME, "127.0.0.1");
         LOG.info("Starting containers...");
         Startables.deepStart(Stream.of(PD, TIKV, TIDB)).join();
         LOG.info("Containers are started.");
@@ -136,8 +138,8 @@ public class TiDBTestBase extends AbstractTestBase {
 
     @AfterClass
     public static void stopContainers() {
-        DnsCacheManipulator.removeDnsCache(PD_SERVICE_NAME);
-        DnsCacheManipulator.removeDnsCache(TIKV_SERVICE_NAME);
+        removeDnsCache(PD_SERVICE_NAME);
+        removeDnsCache(TIKV_SERVICE_NAME);
         Stream.of(TIKV, PD, TIDB).forEach(GenericContainer::stop);
     }
 
@@ -210,6 +212,48 @@ public class TiDBTestBase extends AbstractTestBase {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /** For issue https://github.com/ververica/flink-cdc-connectors/issues/1806. */
+    private static void setDnsCache(String host, String... ips) {
+        try {
+            InetAddressCacheUtilForJava8Minus.setInetAddressCache(host, ips, Long.MAX_VALUE);
+        } catch (ClassNotFoundException e) {
+            try {
+                InetAddressCacheUtilForJava9Plus.setInetAddressCache(host, ips, Long.MAX_VALUE);
+            } catch (Exception var4) {
+                String message =
+                        String.format(
+                                "Fail to setDnsCache for host %s ip %s, cause: %s",
+                                host, Arrays.toString(ips), var4);
+                throw new DnsCacheManipulatorException(message, var4);
+            }
+        } catch (Exception var4) {
+            String message =
+                    String.format(
+                            "Fail to setDnsCache for host %s ip %s, cause: %s",
+                            host, Arrays.toString(ips), var4);
+            throw new DnsCacheManipulatorException(message, var4);
+        }
+    }
+
+    /** For issue https://github.com/ververica/flink-cdc-connectors/issues/1806. */
+    private static void removeDnsCache(String host) {
+        try {
+            InetAddressCacheUtilForJava8Minus.removeInetAddressCache(host);
+        } catch (ClassNotFoundException e) {
+            try {
+                InetAddressCacheUtilForJava9Plus.removeInetAddressCache(host);
+            } catch (Exception var3) {
+                String message =
+                        String.format("Fail to removeDnsCache for host %s, cause: %s", host, var3);
+                throw new DnsCacheManipulatorException(message, var3);
+            }
+        } catch (Exception var3) {
+            String message =
+                    String.format("Fail to removeDnsCache for host %s, cause: %s", host, var3);
+            throw new DnsCacheManipulatorException(message, var3);
         }
     }
 }
