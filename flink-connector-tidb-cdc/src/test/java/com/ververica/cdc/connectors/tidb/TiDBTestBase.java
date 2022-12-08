@@ -219,7 +219,7 @@ public class TiDBTestBase extends AbstractTestBase {
     private static void setDnsCache(String host, String... ips) {
         try {
             InetAddressCacheUtilForJava8Minus.setInetAddressCache(host, ips, Long.MAX_VALUE);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
             try {
                 InetAddressCacheUtilForJava9Plus.setInetAddressCache(host, ips, Long.MAX_VALUE);
             } catch (Exception var4) {
@@ -242,7 +242,7 @@ public class TiDBTestBase extends AbstractTestBase {
     private static void removeDnsCache(String host) {
         try {
             InetAddressCacheUtilForJava8Minus.removeInetAddressCache(host);
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
             try {
                 InetAddressCacheUtilForJava9Plus.removeInetAddressCache(host);
             } catch (Exception var3) {
