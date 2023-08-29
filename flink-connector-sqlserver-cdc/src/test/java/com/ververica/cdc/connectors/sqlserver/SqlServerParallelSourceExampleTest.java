@@ -31,7 +31,7 @@ import org.junit.Test;
 public class SqlServerParallelSourceExampleTest extends SqlServerSourceTestBase {
 
     @Test
-    @Ignore("Test ignored because it won't stop and is used for manual test")
+//    @Ignore("Test ignored because it won't stop and is used for manual test")
     public void testSqlServerExampleSource() throws Exception {
         initializeSqlServerTable("inventory");
 
@@ -40,7 +40,7 @@ public class SqlServerParallelSourceExampleTest extends SqlServerSourceTestBase 
                         .hostname(MSSQL_SERVER_CONTAINER.getHost())
                         .port(MSSQL_SERVER_CONTAINER.getFirstMappedPort())
                         .databaseList("inventory")
-                        .tableList("dbo.products")
+                        .tableList("dbo.tCR0021_V2.0")
                         .username(MSSQL_SERVER_CONTAINER.getUsername())
                         .password(MSSQL_SERVER_CONTAINER.getPassword())
                         .deserializer(new JsonDebeziumDeserializationSchema())

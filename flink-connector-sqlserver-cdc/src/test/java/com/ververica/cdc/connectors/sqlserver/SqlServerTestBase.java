@@ -191,6 +191,7 @@ public class SqlServerTestBase extends AbstractTestBase {
                                             .split(";"))
                             .collect(Collectors.toList());
             for (String stmt : statements) {
+                System.out.println(stmt);
                 statement.execute(stmt);
             }
         } catch (Exception e) {

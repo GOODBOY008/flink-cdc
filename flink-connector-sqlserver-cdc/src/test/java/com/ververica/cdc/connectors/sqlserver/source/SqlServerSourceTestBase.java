@@ -262,6 +262,7 @@ public abstract class SqlServerSourceTestBase extends TestLogger {
                                             .split(";"))
                             .collect(Collectors.toList());
             for (String stmt : statements) {
+                System.out.println(stmt);
                 statement.execute(stmt);
             }
         } catch (Exception e) {

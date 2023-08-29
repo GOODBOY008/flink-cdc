@@ -313,7 +313,7 @@ public class SqlServerConnectorITCase extends SqlServerTestBase {
                         MSSQL_SERVER_CONTAINER.getPassword(),
                         parallelismSnapshot,
                         "column_type_test",
-                        "dbo.full_types");
+                        "dbo.full_types.dd");
         String sinkDDL =
                 "CREATE TABLE sink (\n"
                         + "    id int NOT NULL,\n"
