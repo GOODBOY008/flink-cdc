@@ -48,7 +48,7 @@ public class OracleE2eITCase extends FlinkContainerTestEnvironment {
     private static final String ORACLE_TEST_PASSWORD = "dbz";
     private static final String ORACLE_DRIVER_CLASS = "oracle.jdbc.driver.OracleDriver";
     private static final String INTER_CONTAINER_ORACLE_ALIAS = "oracle";
-    private static final String ORACLE_IMAGE = "jark/oracle-xe-11g-r2-cdc:0.1";
+    private static final String ORACLE_IMAGE = "goodboy008/oracle-19.3.0-ee:non-cdb";
     private static final int ORACLE_PORT = 1521;
 
     private static final Path oracleCdcJar = TestUtils.getResource("oracle-cdc-connector.jar");

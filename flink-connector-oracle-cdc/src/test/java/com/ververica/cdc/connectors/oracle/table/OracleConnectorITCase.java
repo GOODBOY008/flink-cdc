@@ -241,7 +241,7 @@ public class OracleConnectorITCase {
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
                                 + " 'scan.incremental.snapshot.chunk.size' = '2',"
-                                + " 'database-name' = 'ORCLCDB1',"
+                                + " 'database-name' = 'ORCLCDB',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"
                                 + ")",
@@ -384,22 +384,22 @@ public class OracleConnectorITCase {
         waitForSinkSize("sink", 16);
         List<String> expected =
                 Arrays.asList(
-                        "+I[XE, DEBEZIUM, PRODUCTS, 101, scooter, Small 2-wheel scooter, 3.140]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 102, car battery, 12V car battery, 8.100]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 103, 12-pack drill bits, 12-pack of drill bits with sizes ranging from #40 to #3, 0.800]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 104, hammer, 12oz carpenters hammer, 0.750]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 105, hammer, 14oz carpenters hammer, 0.875]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 106, hammer, 16oz carpenters hammer, 1.000]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 107, rocks, box of assorted rocks, 5.300]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 108, jacket, water resistent black wind breaker, 0.100]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 109, spare tire, 24 inch spare tire, 22.200]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 111, jacket, water resistent white wind breaker, 0.200]",
-                        "+I[XE, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.180]",
-                        "+U[XE, DEBEZIUM, PRODUCTS, 106, hammer, 18oz carpenter hammer, 1.000]",
-                        "+U[XE, DEBEZIUM, PRODUCTS, 107, rocks, box of assorted rocks, 5.100]",
-                        "+U[XE, DEBEZIUM, PRODUCTS, 111, jacket, new water resistent white wind breaker, 0.500]",
-                        "+U[XE, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.170]",
-                        "-D[XE, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.170]");
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 101, scooter, Small 2-wheel scooter, 3.140]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 102, car battery, 12V car battery, 8.100]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 103, 12-pack drill bits, 12-pack of drill bits with sizes ranging from #40 to #3, 0.800]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 104, hammer, 12oz carpenters hammer, 0.750]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 105, hammer, 14oz carpenters hammer, 0.875]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 106, hammer, 16oz carpenters hammer, 1.000]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 107, rocks, box of assorted rocks, 5.300]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 108, jacket, water resistent black wind breaker, 0.100]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 109, spare tire, 24 inch spare tire, 22.200]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 111, jacket, water resistent white wind breaker, 0.200]",
+                        "+I[ORCLCDB, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.180]",
+                        "+U[ORCLCDB, DEBEZIUM, PRODUCTS, 106, hammer, 18oz carpenter hammer, 1.000]",
+                        "+U[ORCLCDB, DEBEZIUM, PRODUCTS, 107, rocks, box of assorted rocks, 5.100]",
+                        "+U[ORCLCDB, DEBEZIUM, PRODUCTS, 111, jacket, new water resistent white wind breaker, 0.500]",
+                        "+U[ORCLCDB, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.170]",
+                        "-D[ORCLCDB, DEBEZIUM, PRODUCTS, 112, scooter, Big 2-wheel scooter , 5.170]");
 
         List<String> actual = TestValuesTableFactory.getRawResults("sink");
         Collections.sort(expected);
@@ -578,86 +578,6 @@ public class OracleConnectorITCase {
     }
 
     @Test
-    public void testXmlType() throws Exception {
-        // Prepare xml type data
-        try (Connection connection = getJdbcConnection();
-                Statement statement = connection.createStatement()) {
-            statement.execute(
-                    "CREATE TABLE debezium.xmltype_table ("
-                            + " ID NUMBER(4),"
-                            + " T15VARCHAR sys.xmltype,"
-                            + " PRIMARY KEY (ID))");
-            statement.execute(
-                    "INSERT INTO debezium.xmltype_table "
-                            + "VALUES (11, sys.xmlType.createXML('<name><a id=\"1\" value=\"some values\">test xmlType</a></name>'))");
-        }
-
-        String sourceDDL =
-                String.format(
-                        "CREATE TABLE test_xmltype_table ("
-                                + " ID INT,"
-                                + " T15VARCHAR STRING,"
-                                + " PRIMARY KEY (ID) NOT ENFORCED"
-                                + ") WITH ("
-                                + " 'connector' = 'oracle-cdc',"
-                                + " 'hostname' = '%s',"
-                                + " 'port' = '%s',"
-                                + " 'username' = '%s',"
-                                + " 'password' = '%s',"
-                                + " 'scan.incremental.snapshot.enabled' = '%s',"
-                                + " 'debezium.log.mining.strategy' = 'online_catalog',"
-                                + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
-                                + " 'database-name' = 'ORCLCDB',"
-                                + " 'schema-name' = '%s',"
-                                + " 'table-name' = '%s'"
-                                + ")",
-                        ORACLECONTAINER.getHost(),
-                        ORACLECONTAINER.getOraclePort(),
-                        "dbzuser",
-                        "dbz",
-                        parallelismSnapshot,
-                        "debezium",
-                        "xmltype_table");
-        String sinkDDL =
-                "CREATE TABLE test_xmltype_sink ("
-                        + " id INT,"
-                        + " T15VARCHAR STRING,"
-                        + " PRIMARY KEY (id) NOT ENFORCED"
-                        + ") WITH ("
-                        + " 'connector' = 'values',"
-                        + " 'sink-insert-only' = 'false',"
-                        + " 'sink-expected-messages-num' = '1'"
-                        + ")";
-        tEnv.executeSql(sourceDDL);
-        tEnv.executeSql(sinkDDL);
-
-        // async submit job
-        TableResult result =
-                tEnv.executeSql("INSERT INTO test_xmltype_sink SELECT * FROM test_xmltype_table");
-
-        waitForSnapshotStarted("test_xmltype_sink");
-
-        // waiting for change events finished.
-        waitForSinkSize("test_xmltype_sink", 1);
-
-        String lineSeparator = System.getProperty("line.separator");
-        String expectedResult =
-                String.format(
-                        "+I[11, <name>%s"
-                                + "   <a id=\"1\" value=\"some values\">test xmlType</a>%s"
-                                + "</name>]",
-                        lineSeparator, lineSeparator);
-
-        List<String> expected = Collections.singletonList(expectedResult);
-
-        List<String> actual = TestValuesTableFactory.getRawResults("test_xmltype_sink");
-        Collections.sort(actual);
-        assertEquals(expected, actual);
-        result.getJobClient().get().cancel().get();
-    }
-
-    @Test
     public void testAllDataTypes() throws Throwable {
         createAndInitialize("column_type_test.sql");
 
@@ -763,8 +683,8 @@ public class OracleConnectorITCase {
                             + "-110451600000000, "
                             + "-93784560000, "
                             + "<name>\n"
-                            + "   <a id=\"1\" value=\"some values\">test xmlType</a>\n"
-                            + "</name>]"
+                            + "  <a id=\"1\" value=\"some values\">test xmlType</a>\n"
+                            + "</name>\n]"
                 };
 
         List<String> actual = TestValuesTableFactory.getResults("sink");
@@ -795,8 +715,7 @@ public class OracleConnectorITCase {
                                 + " 'table-name' = 'category',"
                                 + " 'scan.incremental.snapshot.enabled' = 'false',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
-                                + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'debezium.log.mining.continuous.mine' = 'true'"
+                                + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true'"
                                 + ")",
                         ORACLECONTAINER.getHost(),
                         ORACLECONTAINER.getOraclePort(),
