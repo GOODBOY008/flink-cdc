@@ -25,7 +25,7 @@ import org.apache.flink.table.planner.factories.TestValuesTableFactory;
 import org.apache.flink.shaded.guava30.com.google.common.collect.Lists;
 import org.apache.flink.shaded.guava30.com.google.common.util.concurrent.RateLimiter;
 
-import com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase;
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.lifecycle.Startables;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,14 +50,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.CONNECTOR_PWD;
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.CONNECTOR_USER;
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.ORACLECONTAINER;
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.assertEqualsInAnyOrder;
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.createAndInitialize;
+import static com.ververica.cdc.connectors.oracle.source.OracleSourceTestBase.getJdbcConnection;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /** Integration tests for Oracle redo log SQL source. */
 @RunWith(Parameterized.class)
-public class OracleConnectorITCase extends OracleSourceTestBase {
+public class OracleConnectorITCase {
     private static final int RECORDS_COUNT = 10_000;
     private static final int WORKERS_COUNT = 4;
 
@@ -82,6 +90,11 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
 
     @Before
     public void before() throws Exception {
+
+        LOG.info("Starting containers...");
+        Startables.deepStart(Stream.of(ORACLECONTAINER)).join();
+        LOG.info("Containers are started.");
+
         TestValuesTableFactory.clearAllData();
 
         if (parallelismSnapshot) {
@@ -90,6 +103,11 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
         } else {
             env.setParallelism(1);
         }
+    }
+
+    @After
+    public void teardown() {
+        ORACLECONTAINER.stop();
     }
 
     @Test
@@ -110,7 +128,7 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
                                 + " 'scan.incremental.snapshot.enabled' = '%s',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '3',"
+                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
                                 + " 'database-name' = 'ORCLCDB',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"
@@ -222,7 +240,7 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
                                 + " 'scan.incremental.snapshot.chunk.key-column' = 'ID',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '3',"
+                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
                                 + " 'database-name' = 'ORCLCDB1',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"
@@ -313,7 +331,7 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 // + " 'debezium.database.history.store.only.captured.tables.ddl' =
                                 // 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '3',"
+                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
                                 + " 'database-name' = 'ORCLCDB',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"
@@ -589,7 +607,7 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
                                 + " 'scan.incremental.snapshot.enabled' = '%s',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '3',"
+                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
                                 + " 'database-name' = 'ORCLCDB',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"
@@ -698,7 +716,7 @@ public class OracleConnectorITCase extends OracleSourceTestBase {
                                 + " 'scan.incremental.snapshot.enabled' = '%s',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true',"
-                                + " 'scan.incremental.snapshot.chunk.size' = '3',"
+                                + " 'scan.incremental.snapshot.chunk.size' = '2',"
                                 + " 'database-name' = 'ORCLCDB',"
                                 + " 'schema-name' = '%s',"
                                 + " 'table-name' = '%s'"

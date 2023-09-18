@@ -64,7 +64,7 @@ public class OracleSourceTestBase extends TestLogger {
     public static final String TEST_PWD = "dbz";
     public static final String CONNECTOR_PWD = "dbz";
 
-    protected static final OracleContainer ORACLECONTAINER =
+    public static final OracleContainer ORACLECONTAINER =
             new OracleContainer(
                             DockerImageName.parse("goodboy008/oracle-19.3.0-ee").withTag("non-cdb"))
                     .withUsername(CONNECTOR_USER)
