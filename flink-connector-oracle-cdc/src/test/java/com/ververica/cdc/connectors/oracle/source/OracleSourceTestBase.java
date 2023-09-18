@@ -22,7 +22,7 @@ import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.apache.flink.util.TestLogger;
 
-import com.ververica.cdc.connectors.oracle.utils.OracleTestUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.slf4j.Logger;
@@ -30,14 +30,25 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.Startables;
+import org.testcontainers.utility.DockerImageName;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /** Basic class for testing {@link OracleSourceBuilder.OracleIncrementalSource}. */
@@ -46,17 +57,20 @@ public class OracleSourceTestBase extends TestLogger {
     protected static final Logger LOG = LoggerFactory.getLogger(OracleSourceTestBase.class);
     protected static final Pattern COMMENT_PATTERN = Pattern.compile("^(.*)--.*$");
     protected static final int DEFAULT_PARALLELISM = 4;
-    protected static final String ORACLE_SYSTEM_USER = "system";
-    protected static final String ORACLE_SYSTEM_PASSWORD = "oracle";
-    protected static final String ORACLE_TEST_USER = "dbzuser";
-    protected static final String ORACLE_TEST_PASSWORD = "dbz";
-    protected static final String ORACLE_DRIVER_CLASS = "oracle.jdbc.driver.OracleDriver";
-    protected static final String INTER_CONTAINER_ORACLE_ALIAS = "oracle";
-    protected static final String ORACLE_IMAGE = "jark/oracle-xe-11g-r2-cdc:0.1";
-    protected static final String ORACLE_DATABASE = "XE";
+    protected static final String ORACLE_DATABASE = "ORCLCDB";
     protected static final String ORACLE_SCHEMA = "DEBEZIUM";
-    protected static final OracleContainer ORACLE_CONTAINER =
-            OracleTestUtils.ORACLE_CONTAINER.withLogConsumer(new Slf4jLogConsumer(LOG));
+    public static final String CONNECTOR_USER = "dbzuser";
+    public static final String TEST_USER = "debezium";
+    public static final String TEST_PWD = "dbz";
+    public static final String CONNECTOR_PWD = "dbz";
+
+    protected static final OracleContainer ORACLECONTAINER =
+            new OracleContainer(
+                            DockerImageName.parse("goodboy008/oracle-19.3.0-ee").withTag("non-cdb"))
+                    .withUsername(CONNECTOR_USER)
+                    .withPassword(CONNECTOR_PWD)
+                    .withDatabaseName(ORACLE_DATABASE)
+                    .withLogConsumer(new Slf4jLogConsumer(LOG));
 
     @Rule
     public final MiniClusterWithClientResource miniClusterResource =
@@ -72,8 +86,17 @@ public class OracleSourceTestBase extends TestLogger {
     @BeforeClass
     public static void startContainers() {
         LOG.info("Starting containers...");
-        Startables.deepStart(Stream.of(ORACLE_CONTAINER)).join();
+        Startables.deepStart(Stream.of(ORACLECONTAINER)).join();
         LOG.info("Containers are started.");
+    }
+
+    @AfterClass
+    public static void stopContainers() {
+        LOG.info("Stopping containers...");
+        if (ORACLECONTAINER != null) {
+            ORACLECONTAINER.stop();
+        }
+        LOG.info("Containers are stopped.");
     }
 
     public static void assertEqualsInAnyOrder(List<String> expected, List<String> actual) {
@@ -87,5 +110,37 @@ public class OracleSourceTestBase extends TestLogger {
         assertTrue(expected != null && actual != null);
         assertEquals(expected.size(), actual.size());
         assertArrayEquals(expected.toArray(new String[0]), actual.toArray(new String[0]));
+    }
+
+    public static Connection getJdbcConnection() throws SQLException {
+        return DriverManager.getConnection(ORACLECONTAINER.getJdbcUrl(), TEST_USER, TEST_PWD);
+    }
+
+    public static void createAndInitialize(String sqlFile) throws Exception {
+        final String ddlFile = String.format("ddl/%s", sqlFile);
+        final URL ddlTestFile = OracleSourceITCase.class.getClassLoader().getResource(ddlFile);
+        assertNotNull("Cannot locate " + ddlFile, ddlTestFile);
+        try (Connection connection = getJdbcConnection();
+                Statement statement = connection.createStatement()) {
+
+            final List<String> statements =
+                    Arrays.stream(
+                                    Files.readAllLines(Paths.get(ddlTestFile.toURI())).stream()
+                                            .map(String::trim)
+                                            .filter(x -> !x.startsWith("--") && !x.isEmpty())
+                                            .map(
+                                                    x -> {
+                                                        final Matcher m =
+                                                                COMMENT_PATTERN.matcher(x);
+                                                        return m.matches() ? m.group(1) : x;
+                                                    })
+                                            .collect(Collectors.joining("\n"))
+                                            .split(";"))
+                            .collect(Collectors.toList());
+
+            for (String stmt : statements) {
+                statement.execute(stmt);
+            }
+        }
     }
 }

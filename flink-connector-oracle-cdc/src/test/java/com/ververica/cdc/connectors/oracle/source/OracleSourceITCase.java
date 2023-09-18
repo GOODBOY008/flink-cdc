@@ -38,8 +38,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -148,13 +146,12 @@ public class OracleSourceITCase extends OracleSourceTestBase {
                                 + " 'table-name' = '%s',"
                                 + " 'scan.incremental.snapshot.enabled' = 'false',"
                                 + " 'debezium.log.mining.strategy' = 'online_catalog',"
-                                + " 'debezium.log.mining.continuous.mine' = 'true',"
                                 + " 'debezium.database.history.store.only.captured.tables.ddl' = 'true'"
                                 + ")",
-                        ORACLE_CONTAINER.getHost(),
-                        ORACLE_CONTAINER.getOraclePort(),
-                        ORACLE_CONTAINER.getUsername(),
-                        ORACLE_CONTAINER.getPassword(),
+                        ORACLECONTAINER.getHost(),
+                        ORACLECONTAINER.getOraclePort(),
+                        ORACLECONTAINER.getUsername(),
+                        ORACLECONTAINER.getPassword(),
                         ORACLE_DATABASE,
                         ORACLE_SCHEMA,
                         getTableNameRegex(captureCustomerTables) // (customer|customer_1)
@@ -280,11 +277,11 @@ public class OracleSourceITCase extends OracleSourceTestBase {
         }
     }
 
-    private void createAndInitialize(String sqlFile) throws Exception {
+    public static void createAndInitialize(String sqlFile) throws Exception {
         final String ddlFile = String.format("ddl/%s", sqlFile);
         final URL ddlTestFile = OracleSourceITCase.class.getClassLoader().getResource(ddlFile);
         assertNotNull("Cannot locate " + ddlFile, ddlTestFile);
-        try (Connection connection = getConnection();
+        try (Connection connection = getJdbcConnection();
                 Statement statement = connection.createStatement()) {
 
             try {
@@ -317,7 +314,7 @@ public class OracleSourceITCase extends OracleSourceTestBase {
     }
 
     private void executeSql(String sql) throws Exception {
-        try (Connection connection = getConnection();
+        try (Connection connection = getJdbcConnection();
                 Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }
@@ -389,10 +386,5 @@ public class OracleSourceITCase extends OracleSourceTestBase {
                 return 0;
             }
         }
-    }
-
-    public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(
-                ORACLE_CONTAINER.getJdbcUrl(), ORACLE_SYSTEM_USER, ORACLE_SYSTEM_PASSWORD);
     }
 }
