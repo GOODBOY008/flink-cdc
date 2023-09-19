@@ -66,7 +66,7 @@ jobs:
     dependsOn: compile_${{parameters.stage_name}}
     condition: and(succeeded(), not(eq(variables['MODE'], 'e2e')))
     pool: ${{parameters.test_pool_definition}}
-    timeoutInMinutes: 70
+    timeoutInMinutes: 90
     cancelTimeoutInMinutes: 1
     workspace:
       clean: all

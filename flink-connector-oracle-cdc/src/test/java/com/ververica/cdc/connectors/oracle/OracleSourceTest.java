@@ -74,6 +74,9 @@ public class OracleSourceTest extends OracleSourceTestBase {
 
     @Test
     public void testConsumingAllEvents() throws Exception {
+
+        createAndInitialize("product.sql");
+
         DebeziumSourceFunction<SourceRecord> source = createOracleLogminerSource();
         TestSourceContext<SourceRecord> sourceContext = new TestSourceContext<>();
 
@@ -146,6 +149,9 @@ public class OracleSourceTest extends OracleSourceTestBase {
     @Test
     @Ignore("It can be open until DBZ-5245 and DBZ-4936 fix")
     public void testCheckpointAndRestore() throws Exception {
+
+        createAndInitialize("product.sql");
+
         final TestingListState<byte[]> offsetState = new TestingListState<>();
         final TestingListState<String> historyState = new TestingListState<>();
         {
@@ -350,6 +356,8 @@ public class OracleSourceTest extends OracleSourceTestBase {
     @Test
     @Ignore("Debezium Oracle connector don't monitor unknown tables since 1.6, see DBZ-3612")
     public void testRecoverFromRenameOperation() throws Exception {
+
+        createAndInitialize("product.sql");
         final TestingListState<byte[]> offsetState = new TestingListState<>();
         final TestingListState<String> historyState = new TestingListState<>();
 
@@ -443,6 +451,8 @@ public class OracleSourceTest extends OracleSourceTestBase {
 
     @Test
     public void testConsumingEmptyTable() throws Exception {
+
+        createAndInitialize("product.sql");
         final TestingListState<byte[]> offsetState = new TestingListState<>();
         final TestingListState<String> historyState = new TestingListState<>();
         int prevPos = 0;

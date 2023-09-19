@@ -59,6 +59,9 @@ public class OracleChangeEventSourceExampleTest extends OracleSourceTestBase {
     @Test
     @Ignore("Test ignored because it won't stop and is used for manual test")
     public void testConsumingAllEvents() throws Exception {
+
+        createAndInitialize("product.sql");
+
         LOG.info(
                 "getOraclePort:{},getUsername:{},getPassword:{}",
                 ORACLECONTAINER.getOraclePort(),
@@ -69,11 +72,11 @@ public class OracleChangeEventSourceExampleTest extends OracleSourceTestBase {
         debeziumProperties.setProperty("log.mining.strategy", "online_catalog");
 
         JdbcIncrementalSource<String> oracleChangeEventSource =
-                new OracleSourceBuilder()
+                new OracleSourceBuilder<String>()
                         .hostname(ORACLECONTAINER.getHost())
                         .port(ORACLECONTAINER.getOraclePort())
-                        .databaseList("ORCLCDB")
-                        .schemaList("DEBEZIUM")
+                        .databaseList(ORACLE_DATABASE)
+                        .schemaList(ORACLE_SCHEMA)
                         .tableList("DEBEZIUM.PRODUCTS")
                         .username(ORACLECONTAINER.getUsername())
                         .password(ORACLECONTAINER.getPassword())

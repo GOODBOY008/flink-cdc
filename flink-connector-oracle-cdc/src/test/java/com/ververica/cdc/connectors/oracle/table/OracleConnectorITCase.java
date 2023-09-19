@@ -112,6 +112,8 @@ public class OracleConnectorITCase {
 
     @Test
     public void testConsumingAllEvents() throws Exception {
+
+        createAndInitialize("product.sql");
         String sourceDDL =
                 String.format(
                         "CREATE TABLE debezium_source ("
@@ -220,6 +222,7 @@ public class OracleConnectorITCase {
     @Test
     public void testConsumingAllEventsByChunkKeyColumn() throws Exception {
 
+        createAndInitialize("product.sql");
         if (!parallelismSnapshot) {
             return;
         }
@@ -310,6 +313,8 @@ public class OracleConnectorITCase {
 
     @Test
     public void testMetadataColumns() throws Throwable {
+
+        createAndInitialize("product.sql");
         String sourceDDL =
                 String.format(
                         "CREATE TABLE debezium_source ("
@@ -410,6 +415,8 @@ public class OracleConnectorITCase {
 
     @Test
     public void testStartupFromLatestOffset() throws Exception {
+
+        createAndInitialize("product.sql");
         String sourceDDL =
                 String.format(
                         "CREATE TABLE debezium_source ("
