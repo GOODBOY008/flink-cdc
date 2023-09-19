@@ -74,8 +74,8 @@ jobs:
       matrix:
         postgres:
           module: postgres
-        oracle:
-          module: oracle
+        tidb:
+          module: tidb
         mongodb:
           module: mongodb
         sqlserver:
@@ -144,8 +144,8 @@ jobs:
       matrix:
         mysql:
           module: mysql
-        tidb:
-          module: tidb
+        oracle:
+          module: oracle
         e2e_2:
           module: e2e_2
     steps:
