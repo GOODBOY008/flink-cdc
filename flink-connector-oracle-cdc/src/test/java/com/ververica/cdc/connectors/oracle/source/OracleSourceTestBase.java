@@ -22,6 +22,7 @@ import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.apache.flink.util.TestLogger;
 
+import io.debezium.relational.TableId;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -37,10 +38,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,8 +62,8 @@ public class OracleSourceTestBase extends TestLogger {
     protected static final Logger LOG = LoggerFactory.getLogger(OracleSourceTestBase.class);
     protected static final Pattern COMMENT_PATTERN = Pattern.compile("^(.*)--.*$");
     protected static final int DEFAULT_PARALLELISM = 4;
-    protected static final String ORACLE_DATABASE = "ORCLCDB";
-    protected static final String ORACLE_SCHEMA = "DEBEZIUM";
+    public static final String ORACLE_DATABASE = "ORCLCDB";
+    public static final String ORACLE_SCHEMA = "DEBEZIUM";
     public static final String CONNECTOR_USER = "dbzuser";
     public static final String TEST_USER = "debezium";
     public static final String TEST_PWD = "dbz";
@@ -122,6 +127,23 @@ public class OracleSourceTestBase extends TestLogger {
         assertNotNull("Cannot locate " + ddlFile, ddlTestFile);
         try (Connection connection = getJdbcConnection();
                 Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(true);
+            // region Drop all user tables in Debezium schema
+            listTables(connection)
+                    .forEach(
+                            tableId -> {
+                                try {
+                                    statement.execute(
+                                            "DROP TABLE "
+                                                    + String.join(
+                                                            ".",
+                                                            tableId.schema(),
+                                                            tableId.table()));
+                                } catch (SQLException e) {
+                                    LOG.warn("drop table error, table:{}", tableId, e);
+                                }
+                            });
+            // endregion
 
             final List<String> statements =
                     Arrays.stream(
@@ -142,5 +164,32 @@ public class OracleSourceTestBase extends TestLogger {
                 statement.execute(stmt);
             }
         }
+    }
+
+    // ------------------ utils -----------------------
+    private static List<TableId> listTables(Connection connection) {
+        final List<TableId> capturedTableIds = new ArrayList<>();
+
+        Set<TableId> tableIdSet = new HashSet<>();
+        String queryTablesSql =
+                "SELECT OWNER ,TABLE_NAME,TABLESPACE_NAME FROM ALL_TABLES \n"
+                        + "WHERE TABLESPACE_NAME IS NOT NULL AND TABLESPACE_NAME NOT IN ('SYSTEM','SYSAUX')";
+        try {
+            ResultSet resultSet = connection.createStatement().executeQuery(queryTablesSql);
+            while (resultSet.next()) {
+                String schemaName = resultSet.getString(1);
+                String tableName = resultSet.getString(2);
+                TableId tableId = new TableId(ORACLE_DATABASE, schemaName, tableName);
+                tableIdSet.add(tableId);
+            }
+        } catch (SQLException e) {
+            LOG.warn(" SQL execute error, sql:{}", queryTablesSql, e);
+        }
+
+        for (TableId tableId : tableIdSet) {
+            capturedTableIds.add(tableId);
+        }
+
+        return capturedTableIds;
     }
 }

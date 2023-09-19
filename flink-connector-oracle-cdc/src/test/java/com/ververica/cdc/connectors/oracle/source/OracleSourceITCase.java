@@ -34,21 +34,15 @@ import org.junit.rules.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.apache.flink.util.Preconditions.checkState;
-import static org.junit.Assert.assertNotNull;
 
 /** IT tests for {@link OracleSourceBuilder.OracleIncrementalSource}. */
 public class OracleSourceITCase extends OracleSourceTestBase {
@@ -274,42 +268,6 @@ public class OracleSourceITCase extends OracleSourceTestBase {
         } else {
             // pattern that matches multiple tables
             return format("(%s)", StringUtils.join(captureCustomerTables, "|"));
-        }
-    }
-
-    public static void createAndInitialize(String sqlFile) throws Exception {
-        final String ddlFile = String.format("ddl/%s", sqlFile);
-        final URL ddlTestFile = OracleSourceITCase.class.getClassLoader().getResource(ddlFile);
-        assertNotNull("Cannot locate " + ddlFile, ddlTestFile);
-        try (Connection connection = getJdbcConnection();
-                Statement statement = connection.createStatement()) {
-
-            try {
-                // DROP TABLE IF EXITS
-                statement.execute("DROP TABLE DEBEZIUM.CUSTOMERS");
-                statement.execute("DROP TABLE DEBEZIUM.CUSTOMERS_1");
-            } catch (Exception e) {
-                LOG.error("DEBEZIUM.CUSTOMERS DEBEZIUM.CUSTOMERS_1 NOT EXITS", e);
-            }
-
-            final List<String> statements =
-                    Arrays.stream(
-                                    Files.readAllLines(Paths.get(ddlTestFile.toURI())).stream()
-                                            .map(String::trim)
-                                            .filter(x -> !x.startsWith("--") && !x.isEmpty())
-                                            .map(
-                                                    x -> {
-                                                        final Matcher m =
-                                                                COMMENT_PATTERN.matcher(x);
-                                                        return m.matches() ? m.group(1) : x;
-                                                    })
-                                            .collect(Collectors.joining("\n"))
-                                            .split(";"))
-                            .collect(Collectors.toList());
-
-            for (String stmt : statements) {
-                statement.execute(stmt);
-            }
         }
     }
 
