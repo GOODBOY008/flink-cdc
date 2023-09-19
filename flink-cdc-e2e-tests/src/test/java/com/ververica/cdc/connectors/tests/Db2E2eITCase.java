@@ -20,6 +20,7 @@ import com.ververica.cdc.connectors.tests.utils.FlinkContainerTestEnvironment;
 import com.ververica.cdc.connectors.tests.utils.JdbcProxy;
 import com.ververica.cdc.connectors.tests.utils.TestUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -55,15 +56,16 @@ public class Db2E2eITCase extends FlinkContainerTestEnvironment {
     private static final Path db2CdcJar = TestUtils.getResource("db2-cdc-connector.jar");
     private static final Path mysqlDriverJar = TestUtils.getResource("mysql-driver.jar");
 
+    public static final String DB2_IMAGE = "ibmcom/db2";
     private static final DockerImageName DEBEZIUM_DOCKER_IMAGE_NAME =
             DockerImageName.parse(
                             new ImageFromDockerfile("custom/db2-cdc:1.4")
                                     .withDockerfile(getFilePath("docker/db2/Dockerfile"))
                                     .get())
-                    .asCompatibleSubstituteFor("ibmcom/db2");
+                    .asCompatibleSubstituteFor(DB2_IMAGE);
     private static boolean db2AsnAgentRunning = false;
 
-    private Db2Container db2Container;
+    private static Db2Container db2Container;
 
     @Before
     public void before() {
@@ -109,6 +111,22 @@ public class Db2E2eITCase extends FlinkContainerTestEnvironment {
         }
         db2AsnAgentRunning = false;
         super.after();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        // Cleanup the db2 image, because it's too large and will cause the next test to fail.
+        db2Container
+                .getDockerClient()
+                .listImagesCmd()
+                .withImageNameFilter(DB2_IMAGE)
+                .exec()
+                .forEach(
+                        image ->
+                                db2Container
+                                        .getDockerClient()
+                                        .removeImageCmd(image.getId())
+                                        .exec());
     }
 
     @Test

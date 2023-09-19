@@ -20,8 +20,8 @@ import com.ververica.cdc.connectors.tests.utils.FlinkContainerTestEnvironment;
 import com.ververica.cdc.connectors.tests.utils.JdbcProxy;
 import com.ververica.cdc.connectors.tests.utils.TestUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -58,6 +58,7 @@ public class SqlServerE2eITCase extends FlinkContainerTestEnvironment {
     private static final Path sqlServerCdcJar =
             TestUtils.getResource("sqlserver-cdc-connector.jar");
     private static final Path mysqlDriverJar = TestUtils.getResource("mysql-driver.jar");
+    public static final String MSSQL_SERVER_IMAGE = "mcr.microsoft.com/mssql/server:2019-latest";
 
     @Parameterized.Parameter(1)
     public boolean parallelismSnapshot;
@@ -73,9 +74,8 @@ public class SqlServerE2eITCase extends FlinkContainerTestEnvironment {
         return params;
     }
 
-    @Rule
-    public MSSQLServerContainer sqlServer =
-            new MSSQLServerContainer<>("mcr.microsoft.com/mssql/server:2019-latest")
+    private static MSSQLServerContainer sqlServer =
+            new MSSQLServerContainer<>(MSSQL_SERVER_IMAGE)
                     .withPassword("Password!")
                     .withEnv("MSSQL_AGENT_ENABLED", "true")
                     .withEnv("MSSQL_PID", "Standard")
@@ -98,6 +98,17 @@ public class SqlServerE2eITCase extends FlinkContainerTestEnvironment {
             sqlServer.stop();
         }
         super.after();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        // Cleanup the sqlserver image, because it's too large and will cause the next test to fail.
+        sqlServer
+                .getDockerClient()
+                .listImagesCmd()
+                .withImageNameFilter(MSSQL_SERVER_IMAGE)
+                .exec()
+                .forEach(image -> sqlServer.getDockerClient().removeImageCmd(image.getId()).exec());
     }
 
     @Test

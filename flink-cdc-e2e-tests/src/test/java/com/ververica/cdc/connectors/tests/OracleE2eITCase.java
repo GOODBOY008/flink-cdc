@@ -20,6 +20,7 @@ import com.ververica.cdc.connectors.tests.utils.FlinkContainerTestEnvironment;
 import com.ververica.cdc.connectors.tests.utils.JdbcProxy;
 import com.ververica.cdc.connectors.tests.utils.TestUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,17 +54,17 @@ public class OracleE2eITCase extends FlinkContainerTestEnvironment {
     private static final String INTER_CONTAINER_ORACLE_ALIAS = "oracle";
     private static final Path oracleCdcJar = TestUtils.getResource("oracle-cdc-connector.jar");
     private static final Path mysqlDriverJar = TestUtils.getResource("mysql-driver.jar");
-
-    public OracleContainer oracle;
+    private static final DockerImageName oracleImageName =
+            DockerImageName.parse("goodboy008/oracle-19.3.0-ee").withTag("non-cdb");
+    private static OracleContainer oracle;
 
     @Before
     public void before() {
         super.before();
         LOG.info("Starting containers...");
+
         oracle =
-                new OracleContainer(
-                                DockerImageName.parse("goodboy008/oracle-19.3.0-ee")
-                                        .withTag("non-cdb"))
+                new OracleContainer(oracleImageName)
                         .withUsername(CONNECTOR_USER)
                         .withPassword(CONNECTOR_PWD)
                         .withDatabaseName(ORACLE_DATABASE)
@@ -82,6 +83,16 @@ public class OracleE2eITCase extends FlinkContainerTestEnvironment {
             oracle.stop();
         }
         super.after();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        // Cleanup the oracle image, because it's too large and will cause the next test to fail.
+        oracle.getDockerClient()
+                .listImagesCmd()
+                .withImageNameFilter(oracleImageName.getUnversionedPart())
+                .exec()
+                .forEach(image -> oracle.getDockerClient().removeImageCmd(image.getId()).exec());
     }
 
     @Test
