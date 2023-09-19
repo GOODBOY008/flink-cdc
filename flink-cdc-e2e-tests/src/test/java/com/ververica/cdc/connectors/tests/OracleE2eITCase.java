@@ -69,7 +69,8 @@ public class OracleE2eITCase extends FlinkContainerTestEnvironment {
                         .withDatabaseName(ORACLE_DATABASE)
                         .withNetwork(NETWORK)
                         .withNetworkAliases(INTER_CONTAINER_ORACLE_ALIAS)
-                        .withLogConsumer(new Slf4jLogConsumer(LOG));
+                        .withLogConsumer(new Slf4jLogConsumer(LOG))
+                        .withReuse(true);
 
         Startables.deepStart(Stream.of(oracle)).join();
         LOG.info("Containers are started.");
