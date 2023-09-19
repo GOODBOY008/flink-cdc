@@ -23,7 +23,6 @@ import org.apache.flink.runtime.minicluster.MiniCluster;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.apache.flink.table.planner.factories.TestValuesTableFactory;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.CloseableIterator;
 
@@ -327,5 +326,4 @@ public class OracleSourceITCase extends OracleSourceTestBase {
         afterFailAction.run();
         miniCluster.startTaskManager();
     }
-
 }
