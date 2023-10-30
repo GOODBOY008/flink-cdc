@@ -27,11 +27,12 @@ under the License.
     <name>flink-connector-debezium</name>
 
     <properties>
+        <!--region Fix https://github.com/ververica/flink-cdc-connectors/issues/604 -->
         <version.kafka>3.5.0</version.kafka>
+        <!--endregion-->
     </properties>
 
     <dependencyManagement>
-        <!--region Fix https://github.com/ververica/flink-cdc-connectors/issues/604 -->
         <dependencies>
             <dependency>
                 <artifactId>connect-json</artifactId>
