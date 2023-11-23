@@ -43,4 +43,15 @@ under the License.
         </dependency>
     </dependencies>
 
+    <properties>
+        <flink-connector-jdbc.version>3.1.1-1.17</flink-connector-jdbc.version>
+    </properties>
+
+    <modules>
+        <module>flink-cdc-pipeline-connector-mysql</module>
+    </modules>
+
+    <dependencies>
+    </dependencies>
+
 </project>
