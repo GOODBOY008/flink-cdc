@@ -61,8 +61,7 @@ public class DataSinkTranslator {
         }
     }
 
-    private void sinkTo(DataStream<Event> input, Sink<Event> sink, OperatorID schemaOperatorID) {
-        DataStream<Event> stream = input;
+    private void sinkTo(DataStream<Event> input, Sink<Event> sink, OperatorID schemaOperatorID) {DataStream<Event> stream = input;
         // Pre write topology
         if (sink instanceof WithPreWriteTopology) {
             stream = ((WithPreWriteTopology<Event>) sink).addPreWriteTopology(stream);
