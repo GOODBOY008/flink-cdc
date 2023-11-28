@@ -13,4 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-com.ververica.cdc.connectors.mysql.factory.MySqlFactory
+com.ververica.cdc.connectors.mysql.factory.MySqlDataSinkFactory

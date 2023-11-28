@@ -16,6 +16,7 @@
 
 package com.ververica.cdc.composer.flink.translator;
 
+import com.ververica.cdc.common.sink.FlinkSinkFunctionProvider;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.connector.sink2.Sink;
 import org.apache.flink.api.connector.sink2.TwoPhaseCommittingSink;
@@ -51,6 +52,12 @@ public class DataSinkTranslator {
             FlinkSinkProvider sinkProvider = (FlinkSinkProvider) eventSinkProvider;
             Sink<Event> sink = sinkProvider.getSink();
             sinkTo(input, sink, schemaOperatorID);
+        }else if (eventSinkProvider instanceof FlinkSinkFunctionProvider) {
+            FlinkSinkFunctionProvider sinkProvider = (FlinkSinkFunctionProvider) eventSinkProvider;
+            input.addSink(sinkProvider.getSinkFunction()).name("Flink Sink Function");
+        } else {
+            throw new UnsupportedOperationException(
+                    "Unsupported sink provider: " + eventSinkProvider);
         }
     }
 

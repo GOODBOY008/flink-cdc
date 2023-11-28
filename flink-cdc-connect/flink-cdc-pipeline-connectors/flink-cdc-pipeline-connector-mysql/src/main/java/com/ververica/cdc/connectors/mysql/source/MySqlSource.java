@@ -9,13 +9,13 @@ import com.ververica.cdc.common.source.MetadataAccessor;
  * external systems as well.
  */
 public class MySqlSource implements DataSource {
-  @Override
-  public EventSourceProvider getEventSourceProvider() {
-    return null;
-  }
+    @Override
+    public EventSourceProvider getEventSourceProvider() {
+        return null;
+    }
 
-  @Override
-  public MetadataAccessor getMetadataAccessor() {
-    return null;
-  }
+    @Override
+    public MetadataAccessor getMetadataAccessor() {
+        return null;
+    }
 }
