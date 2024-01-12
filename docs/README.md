@@ -1,17 +1,116 @@
-This README gives an overview of how to build the documentation of Flink CDC.
+This README gives an overview of how to build and contribute to the
+documentation of Flink CDC.
+
+The documentation is included with the source of Flink CDC in order to ensure
+that you always have docs corresponding to your checked-out version.
+
+# Requirements
 
 ### Build the site locally
-Make sure you have installed [Docker](https://docs.docker.com/engine/install/) and started it on you local environment.
 
-From the directory of this module (`docs`), use the following command to start the site.
+Make sure you have installed
+[Hugo](https://gohugo.io/getting-started/installing/) on your system.
 
-```sh
-./docs_site.sh start
+From this directory:
+
+  * Fetch the theme submodule
+	```sh
+	git submodule update --init --recursive
+	```
+  * Start local server
+	```sh
+	hugo -b "" serve
+	```
+
+The site can be viewed at http://localhost:1313/
+
+# Contribute
+
+## Markdown
+
+The documentation pages are written in
+[Markdown](http://daringfireball.net/projects/markdown/syntax). It is possible
+to use [GitHub flavored
+syntax](http://github.github.com/github-flavored-markdown) and intermix plain
+html.
+
+## Front matter
+
+In addition to Markdown, every page contains a Jekyll front matter, which
+specifies the title of the page and the layout to use. The title is used as the
+top-level heading for the page.
+
+    ---
+    title: "Title of the Page"
+    ---
+
+    ---
+    title: "Title of the Page" <-- Title rendered in the side nav
+    weight: 1 <-- Weight controls the ordering of pages in the side nav
+    type: docs <-- required
+    aliases:  <-- Alias to setup redirect from removed page to this one
+      - /alias/to/removed/page.html
+    ---
+
+## Structure
+
+### Page
+
+#### Headings
+
+All documents are structured with headings. From these headings, you can
+automatically generate a page table of contents (see below).
+
 ```
-Then the site will run and can be viewed at http://localhost:8001, any update on the `docs` will be shown in the site without restarting. 
-
-Of course, you can use the following command to stop the site.
-
-```sh
-./docs_site.sh stop
+# Level-1 Heading  <- Used for the title of the page 
+## Level-2 Heading <- Start with this one for content
+### Level-3 heading
+#### Level-4 heading
+##### Level-5 heading
 ```
+
+Please stick to the "logical order" when using the headlines, e.g. start with
+level-2 headings and use level-3 headings for subsections, etc. Don't use a
+different ordering, because you don't like how a headline looks.
+
+#### Table of Contents
+
+Table of contents are added automatically to every page, based on heading levels
+2 - 4. The ToC can be omitted by adding the following to the front matter of
+the page:
+
+    ---
+    bookToc: false
+    ---
+
+### ShortCodes 
+
+Flink uses [shortcodes](https://gohugo.io/content-management/shortcodes/) to add
+custom functionality to its documentation markdown. For example:
+
+    {{< artifact flink-ml-core-1.17 withTestScope >}}
+
+This will be replaced by the maven artifact for flink-ml-core-1.17 that users
+should copy into their pom.xml file. It will render out to:
+
+```xml
+<dependency>
+    <groupdId>org.apache.flink</groupId>
+    <artifactId>flink-ml-core-1.17</artifactId>
+    <version><!-- current flink version --></version>
+    <scope>test</scope>
+</dependency>
+```
+
+It includes a number of optional flags:
+
+* withScalaVersion: Includes the scala version suffix to the artifact id
+* withTestScope: Includes `<scope>test</scope>` to the module. Useful for
+  marking test dependencies.
+* withTestClassifier: Includes `<classifier>tests</classifier>`. Useful when
+  users should be pulling in Flink tests dependencies. This is mostly for the
+  test harnesses and probably not what you want. 
+
+Its implementation and documentation can be found at
+`./layouts/shortcodes/artifact.html`. Please refer to `./layouts/shortcodes/`
+for other shortcodes available.
