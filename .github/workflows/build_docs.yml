@@ -18,28 +18,17 @@ name: build_docs
 # execute this docs build workflow automatically when new push happens in any branch
 on:
   push:
-    paths:
-      - 'docs/**'
- 
+    branches:
+      - '*'
+
 jobs:
- 
-  build_docs_job:
+  check_dead_links:
     runs-on: ubuntu-latest
-    container: debian:buster-slim
- 
+    timeout-minutes: 30
     steps:
- 
-    - name: Prereqs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        apt-get update
-        apt-get install -y git
-        git clone "https://token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .
-      shell: bash
- 
-    - name: Execute script to build our documentation and update pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: "docs/build_docs.sh"
-      shell: bash
+      - uses: actions/checkout@v3
+      - run: sudo npm install -g markdown-link-check@3.10.0
+      - run: |
+          for file in $(find . -name "*.md"); do
+            markdown-link-check -c .dlc.json -q "$file"
+          done
