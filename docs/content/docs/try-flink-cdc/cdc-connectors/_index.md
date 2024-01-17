@@ -1,5 +1,5 @@
 ---
-title: Connectors
+title: CDC Connectors
 bookCollapseSection: true
 weight: 1
 aliases:

@@ -141,3 +141,5 @@ pipeline:
   name: mysql-to-kafka-pipeline
   parallelism: 1
 ```
+
+{{< top >}}
