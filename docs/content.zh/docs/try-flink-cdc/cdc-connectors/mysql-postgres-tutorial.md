@@ -35,7 +35,7 @@ In the following sections, we will describe how to use Flink Mysql/Postgres CDC 
 All exercises in this tutorial are performed in the Flink SQL CLI, and the entire process uses standard SQL syntax, without a single line of Java/Scala code or IDE installation.
 
 The overview of the architecture is as follows:
-![Flink CDC Streaming ETL](/_static/fig/mysql-postgress-tutorial/flink-cdc-streaming-etl.png "Flink CDC Streaming ETL")
+{{< img src="/fig/mysql-postgres-tutorial/flink-cdc-streaming-etl.png" width="700px" alt="Flink CDC Streaming ETL" >}}
 
 ## Preparation
 Prepare a Linux or MacOS computer with Docker installed.
@@ -186,7 +186,7 @@ We can also visit [http://localhost:5601/](http://localhost:5601/) to see if Kib
     ```
    Then we can visit [http://localhost:8081/](http://localhost:8081/) to see if Flink is running normally, and the web page looks like:
 
-   ![Flink UI](/_static/fig/mysql-postgress-tutorial/flink-ui.png "Flink UI")
+   {{< img src="/fig/mysql-postgres-tutorial/flink-ui.png" width="700px" alt="Flink UI" >}}
 
 3. Use the following command to start a Flink SQL CLI:
     ```shell
@@ -194,7 +194,7 @@ We can also visit [http://localhost:5601/](http://localhost:5601/) to see if Kib
     ```
    We should see the welcome screen of the CLI client.
 
-   ![Flink SQL Client](/_static/fig/mysql-postgress-tutorial/flink-sql-client.png "Flink SQL Client")
+   {{< img src="/fig/mysql-postgres-tutorial/flink-sql-client.png" alt="Flink SQL Client" >}}
 
 ## Creating tables using Flink DDL in Flink SQL CLI
 First, enable checkpoints every 3 seconds
@@ -296,11 +296,11 @@ Flink SQL> INSERT INTO enriched_orders
 Now, the enriched orders should be shown in Kibana.
 Visit [http://localhost:5601/app/kibana#/management/kibana/index_pattern](http://localhost:5601/app/kibana#/management/kibana/index_pattern) to create an index pattern `enriched_orders`.
 
-![Create Index Pattern](/_static/fig/mysql-postgress-tutorial/kibana-create-index-pattern.png "Create Index Pattern")
+{{< img src="/fig/mysql-postgres-tutorial/kibana-create-index-pattern.png" width="700px" alt="Create Index Pattern" >}}
 
 Visit [http://localhost:5601/app/kibana#/discover](http://localhost:5601/app/kibana#/discover) to find the enriched orders.
 
-![Find enriched Orders](/_static/fig/mysql-postgress-tutorial/kibana-detailed-orders.png "Find enriched Orders")
+{{< img src="/fig/mysql-postgres-tutorial/kibana-detailed-orders.png" width="700px" alt="Find enriched Orders" >}}
 
 Next, do some change in the databases, and then the enriched orders shown in Kibana will be updated after each step in real time.
 1. Insert a new order in MySQL
@@ -331,7 +331,7 @@ Next, do some change in the databases, and then the enriched orders shown in Kib
    DELETE FROM orders WHERE order_id = 10004;
    ```
    The changes of enriched orders in Kibana are as follows:
-   ![Enriched Orders Changes](/_static/fig/mysql-postgress-tutorial/kibana-detailed-orders-changes.gif "Enriched Orders Changes")
+   {{< img src="/fig/mysql-postgres-tutorial/kibana-detailed-orders-changes.gif" width="700px" alt="Enriched Orders Changes" >}}
    
 ## Clean up
 After finishing the tutorial, run the following command to stop all containers in the directory of `docker-compose.yml`:
@@ -342,3 +342,5 @@ Run the following command to stop the Flink cluster in the directory of Flink `f
 ```shell
 ./bin/stop-cluster.sh
 ```
+
+{{< top >}}

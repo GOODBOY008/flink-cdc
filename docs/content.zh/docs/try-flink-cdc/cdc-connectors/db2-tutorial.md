@@ -159,3 +159,5 @@ INSERT INTO DB2INST1.PRODUCTS VALUES (default,'scooter','Big 2-wheel scooter ',5
 
 DELETE FROM DB2INST1.PRODUCTS WHERE ID=111;
 ```
+
+{{< top >}}

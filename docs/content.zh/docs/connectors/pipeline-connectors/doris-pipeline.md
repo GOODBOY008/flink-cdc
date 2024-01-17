@@ -284,12 +284,4 @@ pipeline:
 </table>
 </div>
 
-
-
-
-
-
-## FAQ
---------
-* [FAQ(English)](https://github.com/ververica/flink-cdc-connectors/wiki/FAQ)
-* [FAQ(Chinese)](https://github.com/ververica/flink-cdc-connectors/wiki/FAQ(ZH))
+{{< top >}}

@@ -54,7 +54,7 @@ Prepare a Linux or MacOS computer with Docker installed.
 
 If successfully started, you can access the Flink Web UI at [http://localhost:8081/](http://localhost:8081/), as shown below.
 
-![Flink UI](/_static/fig/mysql-doris-tutorial/flink-ui.png "Flink UI")
+{{< img src="/fig/mysql-doris-tutorial/flink-ui.png" alt="Flink UI" >}}
 
 Executing `start-cluster.sh` multiple times can start multiple `TaskManager`s.
 
@@ -169,7 +169,7 @@ This command automatically starts all the containers defined in the Docker Compo
    [http://localhost:8030/](http://localhost:8030/)  
    The default username is `root`, and the default password is empty.
 
-   ![Doris UI](/_static/fig/mysql-doris-tutorial/doris-ui.png "Doris UI")
+   {{< img src="/fig/mysql-doris-tutorial/doris-ui.png" alt="Doris UI" >}}
 
 2. Create `app_db` database through Web UI.
 
@@ -177,7 +177,7 @@ This command automatically starts all the containers defined in the Docker Compo
    create database app_db;
     ```
 
-   ![Doris create_table](/_static/fig/mysql-doris-tutorial/doris-create-table.png "Doris create table")
+   {{< img src="/fig/mysql-doris-tutorial/doris-create-table.png" alt="Doris create table" >}}
 
 ## Submit job using FlinkCDC cli
 1. Download the binary compressed packages listed below and extract them to the directory ` flink cdc-3.0.0 '`：    
@@ -236,11 +236,11 @@ After successful submission, the return information is as follows：
    ```
  We can find a job  named `Sync MySQL Database to Doris` is running through Flink Web UI.   
 
-![MySQL-to-Doris](/_static/fig/mysql-doris-tutorial/mysql-to-doris.png "MySQL-to-Doris")
+{{< img src="/fig/mysql-doris-tutorial/mysql-to-doris.png" alt="MySQL-to-Doris" >}}
 
 We can find that tables are created and inserted through Doris Web UI.   
 
-![Doris_display_data](/_static/fig/mysql-doris-tutorial/doris_display_data.png "Doris_display_data")
+{{< img src="/fig/mysql-doris-tutorial/doris-display-data.png" alt="Doris display data" >}}
 
 ### Synchronize Schema and Data changes
 Enter MySQL container
@@ -275,7 +275,7 @@ Then, modify schema and record in MySQL, and the tables of Doris will change the
 
 Refresh the Doris Web UI every time you execute a step, and you can see that the `orders` table displayed in Doris will be updated in real-time, like the following：
 
-![Doris_display_result](/_static/fig/mysql-doris-tutorial/doris_display_result.png "Doris_display_result")
+{{< img src="/fig/mysql-doris-tutorial/doris-display-result.png" alt="Doris display result" >}}
 
 Similarly, by modifying the 'shipments' and' products' tables, you can also see the results of synchronized changes in real-time in Doris.
 
@@ -343,3 +343,4 @@ Run the following command to stop the Flink cluster in the directory of Flink `f
    ./bin/stop-cluster.sh
    ```
 
+{{< top >}}

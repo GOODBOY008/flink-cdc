@@ -29,7 +29,7 @@ under the License.
 CDC Connectors for Apache Flink<sup>®</sup> is a set of source connectors for <a href="https://flink.apache.org/">Apache Flink<sup>®</sup></a>, ingesting changes from different databases using change data capture (CDC).
 The CDC Connectors for Apache Flink<sup>®</sup> integrate Debezium as the engine to capture data changes. So it can fully leverage the ability of Debezium. See more about what is [Debezium](https://github.com/debezium/debezium).
 
-![Flink_CDC](/_static/fig/flinkcdc.png "Flink CDC")
+{{< img src="/fig/flinkcdc.png" width="600px" alt="Flink CDC" >}}
 
 ## Supported Connectors
 
@@ -323,7 +323,7 @@ The dependencies are now available in your local `.m2` repository.
 
 1. Left comment under the issue that you want to take
 2. Fork Flink CDC project to your GitHub repositories
-   ![fork](/_static/fig/contribute_guidance/fork.png "fork")
+   {{< img src="/fig/contribute_guidance/fork.png" width="600px" alt="fork" >}}
 3. Clone and compile your Flink CDC project
     ```bash
     git clone https://github.com/your_name/flink-cdc-connectors.git
@@ -335,13 +335,13 @@ The dependencies are now available in your local `.m2` repository.
    git checkout -b my_feature
    -- develop and commit
     ```
-   ![check_branch](/_static/fig/contribute_guidance/check_branch.png "check_branch")
-5. Push your branch to your github
+   {{< img src="/fig/contribute_guidance/check_branch.png" width="600px" alt="check_branch" >}}
+5. Push your branch to your GitHub
     ```bash
    git push origin my_feature
     ```
 6. Open a PR to https://github.com/ververica/flink-cdc-connectors
-   ![open_pr](/_static/fig/contribute_guidance/open_pr.png "open_pr")
+   {{< img src="/fig/contribute_guidance/open_pr.png" width="600px" alt="open_pr" >}}
 
 ### Code Style
 

@@ -36,7 +36,7 @@ You can walk through the tutorial easily in the docker environment. The entire p
 
 The following sections will take the pipeline from MySQL to [Iceberg](https://iceberg.apache.org/) as an example. The overview of the architecture is as follows:
 
-![Real-time data lake with Flink CDC](/_static/fig/real-time-data-lake-tutorial/real-time-data-lake-tutorial.png "architecture of real-time data lake")
+{{< img src="/fig/real-time-data-lake-tutorial/real-time-data-lake-tutorial.png" alt="Real-time data lake with Flink CDC" >}}
 
 You can also use other data sources like Oracle/Postgres and sinks like Hudi to build your own pipeline.
 
@@ -44,7 +44,7 @@ You can also use other data sources like Oracle/Postgres and sinks like Hudi to 
 Prepare a Linux or MacOS computer with Docker installed.
 
 ## Preparing JAR package required
-**Download links are available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself.**
+**Download links are available only for stable releases, SNAPSHOT dependencies need to be built based on master or release-branches by yourself.**
 - flink-sql-connector-mysql-cdc-2.5-SNAPSHOT.jar
 - [flink-shaded-hadoop-2-uber-2.7.5-10.0.jar](https://repo.maven.apache.org/maven2/org/apache/flink/flink-shaded-hadoop-2-uber/2.7.5-10.0/flink-shaded-hadoop-2-uber-2.7.5-10.0.jar)
 - [iceberg-flink-runtime-1.16-1.3.1.jar](https://repo.maven.apache.org/maven2/org/apache/iceberg/iceberg-flink-runtime-1.16/1.3.1/iceberg-flink-runtime-1.16-1.3.1.jar)
@@ -140,7 +140,7 @@ The components required in this tutorial are all managed in containers, so we wi
 * If you want to run with your own Flink environment, remember to download the jar packages and then put them to `FLINK_HOME/lib/`.
 * All the following commands involving `docker-compose` should be executed in the directory of the `docker-compose.yml` file.
 
-![Flink UI](/_static/fig/real-time-data-lake-tutorial/flink-ui.png "Flink UI")
+{{< img src="/fig/real-time-data-lake-tutorial/flink-ui.png" alt="Flink UI" >}}
 
 ### Preparing data in databases
 1. Enter mysql's container:
@@ -201,7 +201,7 @@ docker-compose run sql-client
 
 We should see the welcome screen of the CLI client:
 
-![Flink SQL Client](/_static/fig/real-time-data-lake-tutorial/flink-sql-client.png  "Flink SQL Client" )
+{{< img src="/fig/real-time-data-lake-tutorial/flink-sql-client.png" alt="Flink SQL Client" >}}
 
 Then do the following steps in Flink SQL CLI:
 
@@ -272,7 +272,7 @@ Then do the following steps in Flink SQL CLI:
    The running job can be found in [Flink UI](http://localhost:8081/#/job/running), and it looks like:
    
    
-   ![CDC to Iceberg Running Job](/_static/fig/real-time-data-lake-tutorial/flink-cdc-iceberg-running-job.png "CDC to Iceberg Running Job")
+   {{< img src="/fig/real-time-data-lake-tutorial/flink-cdc-iceberg-running-job.png" alt="CDC to Iceberg Running Job" >}}
    
    Then, we can use the following command to see the files written to Iceberg: 
    ```shell
@@ -280,7 +280,7 @@ Then do the following steps in Flink SQL CLI:
    ```
    It should look like:
 
-   ![Files in Iceberg](/_static/fig/real-time-data-lake-tutorial/files-in-iceberg.png "Files in Iceberg")
+   {{< img src="/fig/real-time-data-lake-tutorial/files-in-iceberg.png" alt="Files in Iceberg" >}}
 
    The actual files may differ in your environment, but the structure of the directory should be similar.
 
@@ -291,7 +291,7 @@ Then do the following steps in Flink SQL CLI:
    ```
    We can see the data queried in the Flink SQL CLI:
    
-   ![Data in Iceberg](/_static/fig/real-time-data-lake-tutorial/data_in_iceberg.png "Data in Iceberg")
+   {{< img src="/fig/real-time-data-lake-tutorial/data_in_iceberg.png" alt="Data in Iceberg" >}}
    
 3. Make some changes in the MySQL databases, and then the data in Iceberg table `all_users_sink` will also change in real time.
    
@@ -317,7 +317,7 @@ Then do the following steps in Flink SQL CLI:
    
    The final query result is as follows:
    
-   ![Final Data in Iceberg](/_static/fig/real-time-data-lake-tutorial/final-data-in-iceberg.png "Final Data in Iceberg")
+   {{< img src="/fig/real-time-data-lake-tutorial/final-data-in-iceberg.png" alt="Final Data in Iceberg" >}}
 
    From the latest result in Iceberg, we can see that there is a new record of `(db_1, user_1, 111)`, and the address of `(db_1, user_2, 120)` has been updated to `Beijing`.
    Besides, the record of `(db_2, user_2, 220)` has been deleted. The result is exactly the same with the changes we did in MySQL.
