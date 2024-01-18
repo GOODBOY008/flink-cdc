@@ -33,8 +33,8 @@ The CDC Connectors for Apache Flink<sup>®</sup> integrate Debezium as the engin
 
 ## Supported Connectors
 
-| Connector                                       | Database                                                                                                                                                                                                                                                                                                                                                                                               | Driver                    |
-|-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| Connector                         | Database                                                                                                                                                                                                                                                                                                                                                                                               | Driver                    |
+|-----------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | [mongodb-cdc](mongodb-cdc.md)     | <li> [MongoDB](https://www.mongodb.com): 3.6, 4.x, 5.0                                                                                                                                                                                                                                                                                                                                                 | MongoDB Driver: 4.3.4     |
 | [mysql-cdc](mysql-cdc.md)         | <li> [MySQL](https://dev.mysql.com/doc): 5.6, 5.7, 8.0.x <li> [RDS MySQL](https://www.aliyun.com/product/rds/mysql): 5.6, 5.7, 8.0.x <li> [PolarDB MySQL](https://www.aliyun.com/product/polardb): 5.6, 5.7, 8.0.x <li> [Aurora MySQL](https://aws.amazon.com/cn/rds/aurora): 5.6, 5.7, 8.0.x <li> [MariaDB](https://mariadb.org): 10.x <li> [PolarDB X](https://github.com/ApsaraDB/galaxysql): 2.0.1 | JDBC Driver: 8.0.28       |
 | [oceanbase-cdc](oceanbase-cdc.md) | <li> [OceanBase CE](https://open.oceanbase.com): 3.1.x, 4.x <li> [OceanBase EE](https://www.oceanbase.com/product/oceanbase): 2.x, 3.x, 4.x                                                                                                                                                                                                                                                            | OceanBase Driver: 2.4.x   |
@@ -70,8 +70,8 @@ The following table shows the version mapping between Flink<sup>®</sup> CDC Con
 
 The following table shows the current features of the connector:
 
-| Connector                                       | No-lock Read | Parallel Read | Exactly-once Read | Incremental Snapshot Read |
-|-------------------------------------------------|--------------|---------------|-------------------|---------------------------|
+| Connector                         | No-lock Read | Parallel Read | Exactly-once Read | Incremental Snapshot Read |
+|-----------------------------------|--------------|---------------|-------------------|---------------------------|
 | [mongodb-cdc](mongodb-cdc.md)     | ✅            | ✅             | ✅                 | ✅                         |
 | [mysql-cdc](mysql-cdc.md)         | ✅            | ✅             | ✅                 | ✅                         |
 | [oracle-cdc](oracle-cdc.md)       | ✅            | ✅             | ✅                 | ✅                         |
@@ -303,100 +303,5 @@ you can construct `JsonDebeziumDeserializationSchema` as following:
  JsonDebeziumDeserializationSchema schema = 
       new JsonDebeziumDeserializationSchema(true, customConverterConfigs);
 ```
-
-## Building from source
-
-Prerequisites:
-- git
-- Maven
-- At least Java 8
-
-```
-git clone https://github.com/ververica/flink-cdc-connectors.git
-cd flink-cdc-connectors
-mvn clean install -DskipTests
-```
-
-The dependencies are now available in your local `.m2` repository.
-
-### Code Contribute
-
-1. Left comment under the issue that you want to take
-2. Fork Flink CDC project to your GitHub repositories
-   {{< img src="/fig/contribute_guidance/fork.png" width="600px" alt="fork" >}}
-3. Clone and compile your Flink CDC project
-    ```bash
-    git clone https://github.com/your_name/flink-cdc-connectors.git
-    cd flink-cdc-connectors
-    mvn clean install -DskipTests
-    ```
-4. Check to a new branch and start your work
-    ```bash
-   git checkout -b my_feature
-   -- develop and commit
-    ```
-   {{< img src="/fig/contribute_guidance/check_branch.png" width="600px" alt="check_branch" >}}
-5. Push your branch to your GitHub
-    ```bash
-   git push origin my_feature
-    ```
-6. Open a PR to https://github.com/ververica/flink-cdc-connectors
-   {{< img src="/fig/contribute_guidance/open_pr.png" width="600px" alt="open_pr" >}}
-
-### Code Style
-
-#### Code Formatting
-
-You need to install the google-java-format plugin. Spotless together with google-java-format is used to format the codes.
-
-It is recommended to automatically format your code by applying the following settings:
-
-1. Go to "Settings" → "Other Settings" → "google-java-format Settings".
-2. Tick the checkbox to enable the plugin.
-3. Change the code style to "Android Open Source Project (AOSP) style".
-4. Go to "Settings" → "Tools" → "Actions on Save".
-5. Under "Formatting Actions", select "Optimize imports" and "Reformat file".
-6. From the "All file types list" next to "Reformat code", select "Java".
-
-For earlier IntelliJ IDEA versions, the step 4 to 7 will be changed as follows.
-
-- 4.Go to "Settings" → "Other Settings" → "Save Actions".
-- 5.Under "General", enable your preferred settings for when to format the code, e.g. "Activate save actions on save".
-- 6.Under "Formatting Actions", select "Optimize imports" and "Reformat file".
-- 7.Under "File Path Inclusions", add an entry for `.*\.java` to avoid formatting other file types.
-  Then the whole project could be formatted by command `mvn spotless:apply`.
-
-#### Checkstyle
-
-Checkstyle is used to enforce static coding guidelines.
-
-1. Go to "Settings" → "Tools" → "Checkstyle".
-2. Set "Scan Scope" to "Only Java sources (including tests)".
-3. For "Checkstyle Version" select "8.14".
-4. Under "Configuration File" click the "+" icon to add a new configuration.
-5. Set "Description" to "Flink cdc".
-6. Select "Use a local Checkstyle file" and link it to the file `tools/maven/checkstyle.xml` which is located within your cloned repository.
-7. Select "Store relative to project location" and click "Next".
-8. Configure the property `checkstyle.suppressions.file` with the value `suppressions.xml` and click "Next".
-9. Click "Finish".
-10. Select "Flink cdc" as the only active configuration file and click "Apply".
-
-You can now import the Checkstyle configuration for the Java code formatter.
-
-1. Go to "Settings" → "Editor" → "Code Style" → "Java".
-2. Click the gear icon next to "Scheme" and select "Import Scheme" → "Checkstyle Configuration".
-3. Navigate to and select `tools/maven/checkstyle.xml` located within your cloned repository.
-
-Then you could click "View" → "Tool Windows" → "Checkstyle" and find the "Check Module" button in the opened tool window to validate checkstyle. Or you can use the command `mvn clean compile checkstyle:checkstyle` to validate.
-
-### Documentation Contribute
-
-Flink cdc documentations locates at `docs/content`.
-
-The contribution step is the same as the code contribution. We use markdown as the source code of the document.
-
-## License
-
-The code in this repository is licensed under the [Apache Software License 2](https://github.com/ververica/flink-cdc-connectors/blob/master/LICENSE).
 
 {{< top >}}
