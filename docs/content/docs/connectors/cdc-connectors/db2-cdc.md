@@ -44,7 +44,7 @@ using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR
 
 ### Maven dependency
 
-{{< artifact flink-connector-db2-cdc withTestScope >}}
+{{< artifact flink-connector-db2-cdc >}}
 
 ### SQL Client JAR
 

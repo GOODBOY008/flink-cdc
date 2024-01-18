@@ -109,7 +109,7 @@ Include following Maven dependency (available through Maven Central):
   <groupId>com.ververica</groupId>
   <!-- add the dependency matching your database -->
   <artifactId>flink-connector-mysql-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
+  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release branches by yourself. -->
   <version>2.5-SNAPSHOT</version>
 </dependency>
 ```

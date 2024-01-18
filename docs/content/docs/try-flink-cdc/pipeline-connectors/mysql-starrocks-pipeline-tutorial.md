@@ -148,7 +148,7 @@ This command automatically starts all the containers defined in the Docker Compo
    flink-cdc-3.0.0 directory will contain four directory `bin`,`lib`,`log`,`conf`.
 
 2. Download the connector package listed below and move it to the `lib` directory  
-   **Download links are available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself.**
+   **Download links are available only for stable releases, SNAPSHOT dependencies need to be built based on master or release branches by yourself.**
     - [MySQL pipeline connector 3.0.0](https://repo1.maven.org/maven2/com/ververica/flink-cdc-pipeline-connector-mysql/3.0.0/flink-cdc-pipeline-connector-mysql-3.0.0.jar)
     - [StarRocks pipeline connector 3.0.0](https://repo1.maven.org/maven2/com/ververica/flink-cdc-pipeline-connector-starrocks/3.0.0/flink-cdc-pipeline-connector-starrocks-3.0.0.jar)
 

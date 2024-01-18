@@ -35,14 +35,7 @@ In order to setup the SQLServer CDC connector, the following table provides depe
 
 ### Maven dependency
 
-```
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-sqlserver-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+{{< artifact flink-connector-sqlserver-cdc >}}
 
 ### SQL Client JAR
 

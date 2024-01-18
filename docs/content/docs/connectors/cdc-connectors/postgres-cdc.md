@@ -35,14 +35,7 @@ In order to setup the Postgres CDC connector, the following table provides depen
 
 ### Maven dependency
 
-```
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-postgres-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+{{< artifact flink-connector-postgres-cdc >}}
 
 ### SQL Client JAR
 

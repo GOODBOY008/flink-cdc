@@ -42,14 +42,7 @@ In order to setup the MySQL CDC connector, the following table provides dependen
 
 ### Maven dependency
 
-```
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-mysql-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+{{< artifact flink-connector-mysql-cdc >}}
 
 ### SQL Client JAR
 

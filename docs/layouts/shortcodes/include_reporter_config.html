@@ -15,13 +15,12 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
-*/}}{{/*
-    Shortcode for linking to Flink's JavaDoc
-
-    Parameters:
-        - file: The relative path to the doc file (required)
-        - name: The rendered link name (required)
 */}}
-<a href="{{ .Site.Params.JavaDocs }}/{{ .Get "file" }}">
-    {{ .Get "name" | markdownify }}
-</a>
+{{/* 
+  Shortcode for embedding a reporter configuration while
+  stripping the key prefixes
+  for a concise listing of available parameters.
+*/}}
+{{ $file := .Get 0 }}
+
+{{ safeHTML (replaceRE "metrics\\.reporter\\.[&lt;&gt;>a-zA-Z]+?\\." "" (os.ReadFile $file)) }}

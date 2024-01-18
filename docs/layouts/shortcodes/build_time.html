@@ -16,12 +16,8 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 */}}{{/*
-    Shortcode for linking to Flink's JavaDoc
-
-    Parameters:
-        - file: The relative path to the doc file (required)
-        - name: The rendered link name (required)
-*/}}
-<a href="{{ .Site.Params.JavaDocs }}/{{ .Get "file" }}">
-    {{ .Get "name" | markdownify }}
-</a>
+  Shortcode that only renders the build time of the site
+  */}}
+<div>
+Documentation built at {{ now.Format "Mon, 02 Jan 2006 15:04:05 -0700" }}
+</div>

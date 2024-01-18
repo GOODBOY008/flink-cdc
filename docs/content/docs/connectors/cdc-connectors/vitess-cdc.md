@@ -18,13 +18,7 @@ In order to setup the Vitess CDC connector, the following table provides depende
 
 ### Maven dependency
 
-```
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-vitess-cdc</artifactId>
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+{{< artifact flink-connector-vitess-cdc >}}
 
 ### SQL Client JAR
 

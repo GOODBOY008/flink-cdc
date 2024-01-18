@@ -35,7 +35,7 @@ This article introduces of Doris Pipeline Connector
 ```yaml
 source:
    type: values
-   name:ValuesSource
+   name: ValuesSource
 
 sink:
    type: doris

@@ -48,7 +48,7 @@ using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR
 <dependency>
   <groupId>com.ververica</groupId>
   <artifactId>flink-connector-db2-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
+  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release branches by yourself. -->
   <version>2.5-SNAPSHOT</version>
 </dependency>
 ```

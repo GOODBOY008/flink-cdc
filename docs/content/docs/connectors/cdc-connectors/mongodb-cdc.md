@@ -34,14 +34,8 @@ Dependencies
 In order to setup the MongoDB CDC connector, the following table provides dependency information for both projects using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.
 
 ### Maven dependency
-```
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-mongodb-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+
+{{< artifact flink-connector-mongodb-cdc >}}
 
 ### SQL Client JAR
 

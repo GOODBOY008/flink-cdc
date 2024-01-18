@@ -33,14 +33,7 @@ Dependencies
 
 In order to set up the OceanBase CDC connector, the following table provides dependency information for both projects using a build automation tool (such as Maven or SBT) and SQL Client with SQL JAR bundles.
 
-```xml
-<dependency>
-  <groupId>com.ververica</groupId>
-  <artifactId>flink-connector-oceanbase-cdc</artifactId>
-  <!-- The dependency is available only for stable releases, SNAPSHOT dependencies need to be built based on master or release- branches by yourself. -->
-  <version>2.5-SNAPSHOT</version>
-</dependency>
-```
+{{< artifact flink-connector-oceanbase-cdc >}}
 
 If you want to use OceanBase JDBC driver to connect to the enterprise edition database, you should also include the following dependency in your class path.
 
