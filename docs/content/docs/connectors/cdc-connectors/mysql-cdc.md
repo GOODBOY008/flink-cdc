@@ -697,8 +697,6 @@ public class MySqlSourceExample {
 }
 ```
 
-**Note:** Please refer [Deserialization](../about.html#deserialization) for more details about the JSON deserialization.
-
 ### Scan Newly Added Tables
 
 Scan Newly Added Tables feature enables you add new tables to monitor for existing running pipeline, the newly added tables will read theirs snapshot data firstly and then read their changelog automatically.

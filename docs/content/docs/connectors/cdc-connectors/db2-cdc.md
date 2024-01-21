@@ -256,8 +256,6 @@ public class Db2SourceExample {
 }
 ```
 
-**Note:** Please refer [Deserialization](../about.html#deserialization) for more details about the JSON deserialization.
-
 Data Type Mapping
 ----------------
 
