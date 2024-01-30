@@ -30,8 +30,8 @@ jobs:
       max-parallel: 1
       matrix:
         branch:
-          - master
-          - release-3.0
+#          - master
+#          - release-3.0
           - master-cdc-new # need to delete this branch
     steps:
       - uses: actions/checkout@v3
