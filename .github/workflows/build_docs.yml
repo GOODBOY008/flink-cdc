@@ -15,10 +15,14 @@
 
 name: "Build documentation"
 on:
-  commit:
+  push:
     branches:
       - master
-      - release-3.0
+      - release-*
+  pull_request:
+    branches:
+      - master
+      - release-*
 
 jobs:
   build-documentation:
