@@ -77,6 +77,8 @@ jobs:
           hugo --source docs
           hugo -v --source docs --destination target
           
+          mvn clean install -B -DskipTests -Dfast
+          
           mkdir -p docs/target/api
           mvn javadoc:aggregate -B \
           -DadditionalJOption="-Xdoclint:none --allow-script-in-comments" \
