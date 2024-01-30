@@ -73,7 +73,7 @@ jobs:
   
           git submodule update --init --recursive
           
-          echo "$PWD"
+          echo $PWD
 #          hugo --source docs
 #          hugo -v --source docs --destination target
           
