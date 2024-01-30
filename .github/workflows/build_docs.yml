@@ -15,13 +15,14 @@
 
 name: "Build documentation"
 on:
-  schedule:
-    - cron: '0 0 * * *' # Deploy every day
-  workflow_dispatch:
+  commit:
+    branches:
+      - master
+      - release-3.0
 
 jobs:
   build-documentation:
-    if: github.repository == 'apache/flink-cdc-connectors'
+#    if: github.repository == 'apache/flink-cdc-connectors'
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
