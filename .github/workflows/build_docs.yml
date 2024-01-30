@@ -73,8 +73,9 @@ jobs:
   
           git submodule update --init --recursive
           
-          hugo --source docs
-          hugo -v --source docs --destination target
+          echo "$PWD"
+#          hugo --source docs
+#          hugo -v --source docs --destination target
           
           mkdir -p docs/target/api
           mvn javadoc:aggregate -B \
