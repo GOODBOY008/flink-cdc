@@ -38,7 +38,7 @@ concurrency:
 jobs:
 
   markdown-link-check:
-    if: github.repository == 'apache/flink-cdc'
+#    if: github.repository == 'apache/flink-cdc'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
