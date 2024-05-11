@@ -32,34 +32,17 @@ on:
     - cron: '0 0 * * *' # Deploy every day
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
-
-  markdown-link-check:
-    if: github.repository == 'apache/flink-cdc'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: gaurav-nelson/github-action-markdown-link-check@1.0.15
-        with:
-          config-file: '.dlc.json'
-
   build-documentation:
-    if: github.event_name != 'pull_request' && github.repository == 'apache/flink-cdc'
+    if: github.repository == 'apache/flink-cdc'
+    name: "Check and build documentation"
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      matrix:
-        branch:
-          - master
-          - release-3.0
 
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ matrix.branch }}
+      - uses: actions/checkout@v4.1.4
 
       - name: Set branch environment variable
         run: |
@@ -73,11 +56,17 @@ jobs:
           echo "flink_alias=stable" >> ${GITHUB_ENV}
           fi
 
+      - name: Check dead links
+        uses: gaurav-nelson/github-action-markdown-link-check@1.0.15
+        with:
+          config-file: '.dlc.json'
+
       - name: Build documentation
         run: |
           docker run --rm --volume "$PWD:/root/flink-cdc" chesnay/flink-ci:java_8_11_17_21_maven_386 bash -c "cd /root/flink-cdc && chmod +x ./.github/workflows/docs.sh && ./.github/workflows/docs.sh"
 
       - name: Upload documentation
+        if: github.event_name != 'pull_request' &&  env.flink_alias != ''
         uses: burnett01/rsync-deployments@5.2
         with:
           switches: --archive --compress
@@ -89,7 +78,7 @@ jobs:
           remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
 
       - name: Upload documentation alias
-        if: env.flink_alias != ''
+        if: github.event_name != 'pull_request' &&  env.flink_alias != ''
         uses: burnett01/rsync-deployments@5.2
         with:
           switches: --archive --compress
