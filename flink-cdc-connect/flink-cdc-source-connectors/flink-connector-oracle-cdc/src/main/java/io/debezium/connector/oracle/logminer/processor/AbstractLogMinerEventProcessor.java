@@ -411,7 +411,7 @@ public abstract class AbstractLogMinerEventProcessor<T extends AbstractTransacti
                             throws InterruptedException {
                         // Update SCN in offset context only if processed SCN less than SCN of other
                         // transactions
-                        if (smallestScn.isNull() || commitScn.compareTo(smallestScn) < 0) {
+                        if (smallestScn.isNull() || commitScn.compareTo(smallestScn) <= 0) {
                             offsetContext.setScn(event.getScn());
                             metrics.setOldestScn(event.getScn());
                         }
