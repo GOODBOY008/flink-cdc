@@ -31,7 +31,7 @@ under the License.
             <p class="leading-normal text-xl text-white">
                 A streaming data integration tool
             </p>
-            <a href="{{< ref "docs/get-started/introduction" >}}" class="link-as-button mx-auto bg-white text-black font-bold my-4 px-8">
+            <a href="{{< ref "docs/get-ssss/introduction" >}}" class="link-as-button mx-auto bg-white text-black font-bold my-4 px-8">
                 Quick Start
             </a>
         </div>

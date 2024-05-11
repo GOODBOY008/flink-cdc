@@ -37,7 +37,7 @@ concurrency:
 
 jobs:
   build-documentation:
-    if: github.repository == 'apache/flink-cdc'
+#    if: github.repository == 'apache/flink-cdc'
     name: "Check and build documentation"
     runs-on: ubuntu-latest
 
