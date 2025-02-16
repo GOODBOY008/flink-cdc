@@ -54,6 +54,7 @@ import org.apache.flink.util.Collector;
 import io.debezium.relational.TableId;
 import io.debezium.relational.history.TableChanges;
 import org.apache.kafka.connect.source.SourceRecord;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,10 +108,12 @@ public class SqlserverSourceReaderTest extends SqlServerSourceTestBase {
                 dialect.discoverDataCollectionSchemas(sourceConfig);
 
         // region wait SQL server's cdc log to be ready
-        Offset offset;
-        do {
-            offset = dialect.displayCurrentOffset(sourceConfig);
-        } while (offset.getOffset().isEmpty());
+        Offset offset =
+                Awaitility.await()
+                        .timeout(Duration.ofSeconds(60))
+                        .until(
+                                () -> dialect.displayCurrentOffset(sourceConfig),
+                                o -> !o.getOffset().isEmpty());
         // endregion
 
         StreamSplit streamSplit =
@@ -184,11 +188,10 @@ public class SqlserverSourceReaderTest extends SqlServerSourceTestBase {
             IncrementalSourceReaderWithCommit sourceReader, DataType recordType) throws Exception {
         // Poll all the n records of the single split.
         final SimpleReaderOutput output = new SimpleReaderOutput();
-        InputStatus status = MORE_AVAILABLE;
-        sourceReader.pollNext(output);
-        while (MORE_AVAILABLE == status || output.getResults().isEmpty()) {
+        InputStatus status;
+        do {
             status = sourceReader.pollNext(output);
-        }
+        } while (MORE_AVAILABLE == status || output.getResults().isEmpty());
         final RecordsFormatter formatter = new RecordsFormatter(recordType);
         return formatter.format(output.getResults());
     }
